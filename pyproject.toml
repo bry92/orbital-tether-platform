@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orbital-tether-platform"
+version = "0.1.0"
+description = "Orbital Tether Digital Twin and Autonomous Operations Platform (research prototype)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary - Research Prototype" }
+authors = [{ name = "Orbital Tether Research" }]
+dependencies = [
+  "numpy>=1.26",
+  "scipy>=1.11",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "pytest-cov>=4.1",
+]
+viz = [
+  "matplotlib>=3.8",
+]
+api = [
+  "fastapi>=0.110",
+  "uvicorn>=0.27",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["simulation*", "control*", "verification*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q --strict-markers"
+markers = [
+  "physics: physics consistency / conservation checks",
+  "smoke: fast smoke tests",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
