@@ -32,7 +32,7 @@ This repository is a technically conservative foundation for exploring orbital t
 /simulation   orbital mechanics, tether model, scenario runner
 /control      autonomous controller stubs (separated from physics)
 /verification experiment records, reports, validation checks
-/dashboard    placeholder only (no UI in v0.1)
+/dashboard    local research evidence dashboard (not an operations UI)
 /docs         engineering documentation and assumption registers
 /tests        physics consistency and smoke tests
 ```
@@ -44,7 +44,10 @@ cd orbital-tether-platform
 python -m pip install -e ".[dev]"
 pytest
 python -m simulation.scenarios.run_deployment_demo
+python -m dashboard.app  # open http://127.0.0.1:8080
 ```
+
+The dashboard is a loopback-only convenience UI for inspecting recorded experiment evidence. It is not flight operations software; see [`dashboard/README.md`](dashboard/README.md) for its claim boundary.
 
 ## Engineering entry points
 

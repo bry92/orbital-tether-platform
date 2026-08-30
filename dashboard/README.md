@@ -1,13 +1,22 @@
-# Dashboard (placeholder)
+# Local Research Dashboard
 
-**v0.1 status:** intentionally empty.
+A small, local-only UI for inspecting the v0.1 quasi-static deployment experiment evidence. It is deliberately not an operations console, mission-design tool, or flight-software interface.
 
-Visualization belongs *after* the physics and verification core are credible.
+## Run
 
-Planned later (not scheduled, not promised):
+```bash
+python -m dashboard.app
+```
 
-- Trajectory / tether geometry plots from experiment JSON
-- Conservation residual trends
-- Decision log viewer (ops layer)
+Open <http://127.0.0.1:8080>. The **Run baseline scenario** action writes a new evidence record to `data/experiments/`; the dashboard reads existing JSON evidence from that directory on load.
 
-Do not add marketing pages or product landing UI in this folder.
+The server binds only to loopback and uses Python's standard library. Keep it local: it has no authentication and is not designed to be exposed on a network.
+
+## What the UI shows
+
+- The most recent experiment's orbit, tether, and tip-altitude diagnostics.
+- The recorded consistency checks and their numerical residuals.
+- The model limitations embedded in the experiment record.
+- A short, local evidence log of recent runs.
+
+The tip altitude cards are **free-orbit diagnostics if cut**, not validated mission outcomes. See `docs/assumptions/ASSUMPTIONS_REGISTER.md` and the report's claim boundary before interpreting any result.
