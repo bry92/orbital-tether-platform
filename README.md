@@ -1,6 +1,6 @@
 # Orbital Tether Digital Twin and Autonomous Operations Platform
 
-**Status:** Research prototype (software-only) — v0.1  
+**Status:** Research prototype (software-only) — v0.2 finite-time deployment path
 **Not flight software. Not a validated mission model. Not a commercial product claim.**
 
 This repository is a technically conservative foundation for exploring orbital tether concepts through:
@@ -12,10 +12,10 @@ This repository is a technically conservative foundation for exploring orbital t
 ## What v0.1 actually does
 
 - Propagates Keplerian two-body state for a point-mass spacecraft
-- Models a **quasi-static radial tether deployment** about the system center of mass
-- Conserves system mass and (under stated assumptions) angular momentum about Earth
+- Models both the v0.1 quasi-static map and a v0.2 prescribed finite-time radial deployment
+- Conserves system mass; v0.1 angular-momentum bookkeeping is tested, while v0.2 records an unresolved prescribed-kinematic angular-momentum discrepancy
 - Records experiment provenance for each run
-- Provides pytest checks for numerical consistency
+- Provides experiment evidence and pytest checks for trajectory geometry and mass bookkeeping
 
 ## What v0.1 does not do
 

@@ -36,12 +36,8 @@ class FiniteDeploymentSample:
     lower_velocity_m_s: np.ndarray
     tether_position_m: np.ndarray
     tether_velocity_m_s: np.ndarray
-    tension_static_n: float
-    tension_dynamic_upper_n: float
-    tension_dynamic_lower_n: float
-    angular_momentum_m2_s: np.ndarray
-    angular_momentum_residual_mag_m2_s: float
-    cm_radius_drift_m: float
+    tension: TensionEstimate
+    angular_momentum_kg_m2_s: np.ndarray
 
     def as_dict(self) -> dict:
         return {

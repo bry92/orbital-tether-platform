@@ -39,7 +39,7 @@ Expert review: `NONE` | `RECOMMENDED` | `REQUIRED`
 | Field | Value |
 |-------|-------|
 | Statement | Tether reaches length \(L\) instantly; no reel dynamics, no transient tension spikes. |
-| Status | ACTIVE |
+| Status | ACTIVE (v0.1 only; SUPERSEDED for v0.2 finite-time path) |
 | Severity | MODELING |
 | Uncertainty | **High.** Real deployments are the dominant mission risk. |
 | Expert review | **REQUIRED** before any deployment timeline or tension claim |
@@ -50,7 +50,7 @@ Expert review: `NONE` | `RECOMMENDED` | `REQUIRED`
 | Field | Value |
 |-------|-------|
 | Statement | Tether has zero mass and infinite stiffness (fixed length after deploy). |
-| Status | ACTIVE |
+| Status | ACTIVE (v0.1 only; PARTIALLY SUPERSEDED for v0.2 by A-013) |
 | Severity | MODELING |
 | Uncertainty | Real tethers have linear density, elasticity, and thermal expansion. |
 | Expert review | **REQUIRED** for tension, boom, or material selection studies |
@@ -128,6 +128,57 @@ Expert review: `NONE` | `RECOMMENDED` | `REQUIRED`
 
 ---
 
+## A-012 — Radially constrained finite-time kinematics
+
+| Field | Value |
+|-------|-------|
+| Statement | The tether remains aligned with the local radial direction during prescribed-length payout. |
+| Status | ACTIVE (v0.2) |
+| Severity | MODELING |
+| Uncertainty | Excludes libration, transverse waves, and Coriolis-driven off-axis motion. |
+| Expert review | REQUIRED |
+
+## A-013 — Midpoint tether mass and lower-body reel mass
+
+| Field | Value |
+|-------|-------|
+| Statement | Deployed tether mass is a midpoint point mass; undeployed mass is collocated with the lower end mass. |
+| Status | ACTIVE (v0.2) |
+| Severity | MODELING |
+| Uncertainty | Does not model distributed load, drum inertia, or thermal mass transfer. |
+| Expert review | REQUIRED for load claims |
+
+## A-014 — Piecewise-constant reel rate
+
+| Field | Value |
+|-------|-------|
+| Statement | Payout has instantaneous start/stop with zero modeled acceleration except at the unmodeled switch. |
+| Status | ACTIVE (v0.2) |
+| Severity | MODELING |
+| Uncertainty | Motor slew and transient reel dynamics are omitted. |
+| Expert review | REQUIRED |
+
+## A-015 — Analytic circular CM path during deployment
+
+| Field | Value |
+|-------|-------|
+| Statement | The center of mass stays on its initial circular two-body orbit during the prescribed deployment. |
+| Status | ACTIVE (v0.2) |
+| Severity | MODELING |
+| Uncertainty | Extended-body and perturbing-force effects are omitted. |
+| Expert review | REQUIRED for mission analysis |
+
+## A-016 — Scalar tension estimator
+
+| Field | Value |
+|-------|-------|
+| Statement | Static and dynamic tension are scalar end-mass estimates under enforced radial kinematics. |
+| Status | ACTIVE (v0.2) |
+| Severity | MODELING |
+| Uncertainty | Not an elasticity, shock, slack-contact, or structural-load model. |
+| Expert review | REQUIRED before any hardware use |
+---
+
 ## Change control
 
 New physics features must:
@@ -136,3 +187,4 @@ New physics features must:
 2. Update `OTDT-ES-001`
 3. Add tests that would fail if the assumption is violated in code
 4. Mark expert-review level honestly
+

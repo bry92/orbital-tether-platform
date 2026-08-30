@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 import numpy as np
 
 from simulation.orbital.kepler import angular_momentum
 from simulation.orbital.state import SpacecraftState
+from simulation.tether.finite_deployment import FiniteDeploymentResult
 from simulation.tether.deployment import (
     DeployedTetherSystem,
     system_angular_momentum,
@@ -143,3 +146,45 @@ def run_deployment_checks(
     )
 
     return ValidationResult(checks=tuple(checks))
+
+
+def run_finite_deployment_checks(result: "FiniteDeploymentResult") -> ValidationResult:
+    """Validate prescribed v0.2 trajectory geometry and mass bookkeeping."""
+    if not isinstance(result, FiniteDeploymentResult):
+        raise TypeError("result must be FiniteDeploymentResult")
+    samples = result.samples
+    initial = samples[0]
+    mass_residual = max(abs(sample.mass_map.total_mass_kg - initial.mass_map.total_mass_kg) for sample in samples)
+    cm_radius_residual = max(abs(sample.cm_state.radius_m - initial.cm_state.radius_m) for sample in samples)
+    length_residual = max(
+        abs(np.linalg.norm(sample.upper_position_m - sample.lower_position_m) - sample.mass_map.length_m)
+        for sample in samples
+    )
+    radial_residual = max(
+        float(np.linalg.norm(np.cross(
+            (sample.upper_position_m - sample.lower_position_m) / sample.mass_map.length_m,
+            sample.cm_state.position_m / sample.cm_state.radius_m,
+        )))
+        for sample in samples
+    )
+    cm_position_residual = max(
+        float(np.linalg.norm((
+            sample.mass_map.upper_mass_kg * sample.upper_position_m
+            + sample.mass_map.lower_effective_mass_kg * sample.lower_position_m
+            + sample.mass_map.tether_deployed_mass_kg * sample.tether_position_m
+        ) / sample.mass_map.total_mass_kg - sample.cm_state.position_m))
+        for sample in samples
+    )
+    h0 = initial.angular_momentum_kg_m2_s
+    angular_momentum_residual = max(
+        float(np.linalg.norm(sample.angular_momentum_kg_m2_s - h0) / np.linalg.norm(h0))
+        for sample in samples
+    )
+    return ValidationResult(checks=(
+        _check("trajectory_mass_conservation", mass_residual, 0.0, "Total end and tether mass is constant (A-013)."),
+        _check("trajectory_cm_position", cm_position_residual, max(1e-9, initial.cm_state.radius_m * 1e-14), "Mass-weighted components recover the declared CM."),
+        _check("cm_circular_radius", cm_radius_residual, max(1e-9, initial.cm_state.radius_m * 1e-14), "CM circular radius is analytic (A-015)."),
+        _check("trajectory_tether_length", length_residual, max(1e-8, result.schedule.final_length_m * 1e-11), "Tip separation follows prescribed length."),
+        _check("trajectory_radial_alignment", radial_residual, 1e-10, "Tether remains radially constrained (A-006/A-012)."),
+        _check("trajectory_angular_momentum", angular_momentum_residual, 1e-8, "Relative Earth-centered angular-momentum residual (v0.2 §10/§11)."),
+    ))
