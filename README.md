@@ -1,6 +1,6 @@
 # Orbital Tether Digital Twin and Autonomous Operations Platform
 
-**Status:** Research prototype (software-only) — v0.1  
+**Status:** Research prototype (software-only) — v0.2 finite-time deployment path
 **Not flight software. Not a validated mission model. Not a commercial product claim.**
 
 This repository is a technically conservative foundation for exploring orbital tether concepts through:
@@ -12,10 +12,10 @@ This repository is a technically conservative foundation for exploring orbital t
 ## What v0.1 actually does
 
 - Propagates Keplerian two-body state for a point-mass spacecraft
-- Models a **quasi-static radial tether deployment** about the system center of mass
-- Conserves system mass and (under stated assumptions) angular momentum about Earth
+- Models both the v0.1 quasi-static map and a v0.2 prescribed finite-time radial deployment
+- Conserves system mass; v0.1 angular-momentum bookkeeping is tested, while v0.2 records an unresolved prescribed-kinematic angular-momentum discrepancy
 - Records experiment provenance for each run
-- Provides pytest checks for numerical consistency
+- Provides experiment evidence and pytest checks for trajectory geometry and mass bookkeeping
 
 ## What v0.1 does not do
 
@@ -32,7 +32,7 @@ This repository is a technically conservative foundation for exploring orbital t
 /simulation   orbital mechanics, tether model, scenario runner
 /control      autonomous controller stubs (separated from physics)
 /verification experiment records, reports, validation checks
-/dashboard    placeholder only (no UI in v0.1)
+/dashboard    local research evidence dashboard (not an operations UI)
 /docs         engineering documentation and assumption registers
 /tests        physics consistency and smoke tests
 ```
@@ -43,8 +43,12 @@ This repository is a technically conservative foundation for exploring orbital t
 cd orbital-tether-platform
 python -m pip install -e ".[dev]"
 pytest
-python -m simulation.scenarios.run_deployment_demo
+python -m simulation.scenarios.run_deployment_demo  # v0.1 instantaneous reference
+python -c "from simulation.scenarios.finite_runner import run_finite_deployment_scenario; print(run_finite_deployment_scenario().validation_passed)"  # v0.2
+python -m dashboard.app  # open http://127.0.0.1:8080
 ```
+
+The dashboard is a loopback-only convenience UI for inspecting recorded experiment evidence. It is not flight operations software; see [`dashboard/README.md`](dashboard/README.md) for its claim boundary.
 
 ## Engineering entry points
 

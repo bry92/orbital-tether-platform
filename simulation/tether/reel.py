@@ -24,13 +24,17 @@ class ReelSchedule:
             raise ValueError("initial_length_m must be positive")
         if self.initial_length_m > self.final_length_m:
             raise ValueError("initial_length_m must be <= final_length_m")
-        if self.reel_rate_m_s <= 0.0:
-            raise ValueError("reel_rate_m_s must be positive")
+        if self.reel_rate_m_s < 0.0:
+            raise ValueError("reel_rate_m_s must be non-negative")
+        if self.reel_rate_m_s == 0.0 and self.initial_length_m != self.final_length_m:
+            raise ValueError("zero reel_rate_m_s requires initial_length_m == final_length_m")
         if self.coast_after_deploy_s < 0.0:
             raise ValueError("coast_after_deploy_s must be non-negative")
 
     @property
     def deploy_duration_s(self) -> float:
+        if self.reel_rate_m_s == 0.0:
+            return 0.0
         return (self.final_length_m - self.initial_length_m) / self.reel_rate_m_s
 
     @property
