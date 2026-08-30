@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071521">
+  <title>Orbital Tether | Research Console</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">OT</span><div><p>ORBITAL TETHER</p><h1>Research Console</h1></div></div>
+      <div class="environment"><i></i> LOCAL RESEARCH MODE</div>
+    </header>
+    <section class="hero">
+      <div><p class="eyebrow">DIGITAL TWIN / V0.1</p><h2>Deployment evidence,<br><em>made legible.</em></h2><p class="lede">Inspect the latest quasi-static radial tether scenario and its conservation checks. This interface is a research aid—not flight operations software.</p></div>
+      <button id="run-button" class="primary"><span>Run baseline scenario</span><b>↗</b></button>
+    </section>
+    <section id="empty-state" class="empty hidden"><p class="eyebrow">NO EVIDENCE YET</p><h3>Start with the documented baseline.</h3><p>Run the default 400 km circular-orbit deployment to create a local, reproducible experiment record.</p></section>
+    <section id="dashboard" class="hidden">
+      <div class="section-heading"><div><p class="eyebrow">LATEST EXPERIMENT</p><h3 id="scenario-title">—</h3></div><span id="validation-badge" class="badge">—</span></div>
+      <div class="metrics">
+        <article><p>Orbit altitude</p><strong id="orbit-altitude">—</strong><small>center of mass</small></article>
+        <article><p>Tether length</p><strong id="tether-length">—</strong><small>radial deployment</small></article>
+        <article><p>Upper tip</p><strong id="upper-altitude">—</strong><small>free-orbit diagnostic</small></article>
+        <article><p>Lower tip</p><strong id="lower-altitude">—</strong><small>free-orbit diagnostic</small></article>
+      </div>
+      <section class="analysis-grid">
+        <article class="panel geometry"><div class="panel-head"><div><p class="eyebrow">GEOMETRY</p><h3>Radial deployment map</h3></div><span>NOT TO SCALE</span></div><div class="orbit-visual"><div class="earth">EARTH</div><div class="cm">CM</div><div class="tether-line"><i class="upper-node"></i><i class="lower-node"></i></div><div class="tip-label top">UPPER TIP <b id="upper-label">—</b></div><div class="tip-label bottom">LOWER TIP <b id="lower-label">—</b></div></div><p class="caption">The v0.1 map preserves center-of-mass geometry and assigns both tips the pre-deployment CM velocity.</p></article>
+        <article class="panel"><div class="panel-head"><div><p class="eyebrow">VERIFICATION</p><h3>Consistency checks</h3></div><span id="check-count">—</span></div><ul id="checks" class="checks"></ul></article>
+      </section>
+      <section class="panel limits"><p class="eyebrow">CLAIM BOUNDARY</p><h3>Model limitations remain in view.</h3><ul id="limitations"></ul></section>
+      <section class="history"><div class="section-heading"><div><p class="eyebrow">EVIDENCE LOG</p><h3>Recent experiments</h3></div><button id="refresh-button" class="quiet">Refresh ↻</button></div><div id="records" class="records"></div></section>
+    </section>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

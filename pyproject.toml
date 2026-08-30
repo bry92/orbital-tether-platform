@@ -30,7 +30,10 @@ api = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["simulation*", "control*", "verification*", "physics*"]
+include = ["simulation*", "control*", "verification*", "physics*", "dashboard*"]
+
+[tool.setuptools.package-data]
+dashboard = ["static/*.html", "static/*.css", "static/*.js"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
