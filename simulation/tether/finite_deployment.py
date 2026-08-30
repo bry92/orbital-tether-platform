@@ -19,27 +19,7 @@ from simulation.orbital.kepler import angular_momentum
 from simulation.orbital.state import SpacecraftState
 from simulation.tether.mass_map import MassMap, compute_mass_map
 from simulation.tether.reel import ReelSchedule
-from simulation.tether.tension import TensionEstimate, estimate_tension
-
-
-@dataclass(frozen=True, slots=True)
-class TipState:
-    """Tip position and velocity at one time sample."""
-
-    name: str
-    position_m: np.ndarray
-    velocity_m_s: np.ndarray
-    radius_m: float
-    speed_m_s: float
-
-    def as_dict(self) -> dict:
-        return {
-            "name": self.name,
-            "position_m": self.position_m.tolist(),
-            "velocity_m_s": self.velocity_m_s.tolist(),
-            "radius_m": self.radius_m,
-            "speed_m_s": self.speed_m_s,
-        }
+from simulation.tether.tension import estimate_tension
 
 
 @dataclass(frozen=True, slots=True)
@@ -50,11 +30,15 @@ class FiniteDeploymentSample:
     length_m: float
     reel_rate_m_s: float
     mass_map: MassMap
-    upper_tip: TipState
-    lower_tip: TipState
-    tether_midpoint: TipState
-    tension_static: TensionEstimate
-    tension_dynamic: TensionEstimate
+    upper_position_m: np.ndarray
+    upper_velocity_m_s: np.ndarray
+    lower_position_m: np.ndarray
+    lower_velocity_m_s: np.ndarray
+    tether_position_m: np.ndarray
+    tether_velocity_m_s: np.ndarray
+    tension_static_n: float
+    tension_dynamic_upper_n: float
+    tension_dynamic_lower_n: float
     angular_momentum_m2_s: np.ndarray
     angular_momentum_residual_mag_m2_s: float
     cm_radius_drift_m: float
@@ -65,11 +49,15 @@ class FiniteDeploymentSample:
             "length_m": self.length_m,
             "reel_rate_m_s": self.reel_rate_m_s,
             "mass_map": self.mass_map.as_dict(),
-            "upper_tip": self.upper_tip.as_dict(),
-            "lower_tip": self.lower_tip.as_dict(),
-            "tether_midpoint": self.tether_midpoint.as_dict(),
-            "tension_static": self.tension_static.as_dict(),
-            "tension_dynamic": self.tension_dynamic.as_dict(),
+            "upper_position_m": self.upper_position_m.tolist(),
+            "upper_velocity_m_s": self.upper_velocity_m_s.tolist(),
+            "lower_position_m": self.lower_position_m.tolist(),
+            "lower_velocity_m_s": self.lower_velocity_m_s.tolist(),
+            "tether_position_m": self.tether_position_m.tolist(),
+            "tether_velocity_m_s": self.tether_velocity_m_s.tolist(),
+            "tension_static_n": self.tension_static_n,
+            "tension_dynamic_upper_n": self.tension_dynamic_upper_n,
+            "tension_dynamic_lower_n": self.tension_dynamic_lower_n,
             "angular_momentum_m2_s": self.angular_momentum_m2_s.tolist(),
             "angular_momentum_residual_mag_m2_s": self.angular_momentum_residual_mag_m2_s,
             "cm_radius_drift_m": self.cm_radius_drift_m,
@@ -191,7 +179,6 @@ def finite_deployment(
     earth = earth or EarthModel()
     earth.validate()
     reel_schedule.validate()
-    cm_state_initial.position_m.shape == (3,)
 
     if upper_mass_kg <= 0.0 or lower_mass_kg <= 0.0:
         raise ValueError("end masses must be positive")
@@ -313,15 +300,7 @@ def finite_deployment(
         # Mean motion for consistency
         n_rad_s = float(np.sqrt(earth.mu_m3_s2 / r_cm_mag**3))
 
-        tension_static = estimate_tension(
-            mu_m3_s2=earth.mu_m3_s2,
-            r_cm_m=r_cm_t,
-            v_cm_m_s=v_cm_t,
-            mass_map=mass_map,
-            n_rad_s=n_rad_s,
-        )
-        # For v0.2, also compute with kinematic acceleration to show dynamic tension
-        tension_dynamic = estimate_tension(
+        tension_est = estimate_tension(
             mu_m3_s2=earth.mu_m3_s2,
             r_cm_m=r_cm_t,
             v_cm_m_s=v_cm_t,
@@ -335,29 +314,15 @@ def finite_deployment(
             length_m=ell,
             reel_rate_m_s=ell_dot,
             mass_map=mass_map,
-            upper_tip=TipState(
-                name="upper",
-                position_m=r_u,
-                velocity_m_s=v_u,
-                radius_m=float(np.linalg.norm(r_u)),
-                speed_m_s=float(np.linalg.norm(v_u)),
-            ),
-            lower_tip=TipState(
-                name="lower",
-                position_m=r_l,
-                velocity_m_s=v_l,
-                radius_m=float(np.linalg.norm(r_l)),
-                speed_m_s=float(np.linalg.norm(v_l)),
-            ),
-            tether_midpoint=TipState(
-                name="tether_midpoint",
-                position_m=r_t,
-                velocity_m_s=v_t,
-                radius_m=float(np.linalg.norm(r_t)),
-                speed_m_s=float(np.linalg.norm(v_t)),
-            ),
-            tension_static=tension_static,
-            tension_dynamic=tension_dynamic,
+            upper_position_m=r_u,
+            upper_velocity_m_s=v_u,
+            lower_position_m=r_l,
+            lower_velocity_m_s=v_l,
+            tether_position_m=r_t,
+            tether_velocity_m_s=v_t,
+            tension_static_n=tension_est.static_upper_n,
+            tension_dynamic_upper_n=tension_est.dynamic_upper_n,
+            tension_dynamic_lower_n=tension_est.dynamic_lower_n,
             angular_momentum_m2_s=h_t,
             angular_momentum_residual_mag_m2_s=h_residual,
             cm_radius_drift_m=cm_drift,
