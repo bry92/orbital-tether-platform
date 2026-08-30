@@ -43,8 +43,7 @@ This repository is a technically conservative foundation for exploring orbital t
 cd orbital-tether-platform
 python -m pip install -e ".[dev]"
 pytest
-python -m simulation.scenarios.run_deployment_demo  # v0.1 instantaneous reference
-python -c "from simulation.scenarios.finite_runner import run_finite_deployment_scenario; print(run_finite_deployment_scenario().validation_passed)"  # v0.2
+python -m simulation.scenarios.run_deployment_demo
 python -m dashboard.app  # open http://127.0.0.1:8080
 ```
 
